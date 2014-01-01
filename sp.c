@@ -37,8 +37,28 @@ void sp_read_callback(void (*cb)(char)) {
   read_callback = cb;
 }
 
+
+
+volatile char rx_buf[256];
+volatile uint8_t rx_head = 0, rx_tail = 0; 
+
+void sp_tick() {
+  while(rx_head != rx_tail) {
+    read_callback(rx_buf[rx_head]);
+    rx_head++;
+    if (rx_head > 255) {
+      rx_head = 0;
+    }
+  }
+}
+
+
 ISR(USART_RX_vect) {
   if (read_callback) {
-    read_callback(UDR0);
+    rx_buf[rx_tail] = UDR0;
+    rx_tail++;
+    if (rx_tail > 255) {
+      rx_tail = 0;
+    }
   }
 }

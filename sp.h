@@ -4,5 +4,6 @@
 void sp_init();
 void sp_write(char c);
 void sp_read_callback(void (*cb)(char));
+void sp_tick();
 
 #endif

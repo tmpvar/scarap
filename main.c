@@ -9,12 +9,13 @@
 #include <avr/wdt.h>
 #include <stdio.h>
 #include <util/delay.h>
+
 #include "sp.h"
+#include "gcode.h"
 
 void on_serial(char c) {
-  if (c != ' ') {
+  if (c != ' ' && c != '\r') {
     gcode_push(c);
-    printf("%c", c);
   }
 }
 
@@ -42,10 +43,12 @@ int main(void)
   printf("scarap 0.0.1\n");
 
   /* insert your hardware initialization here */
+
   for(;;){
     /* insert your main loop code here */
     //printf(".");
-    _delay_ms(10);
+    sp_tick();
+
   }
   printf("hrm\n");
   return 0;   /* never reached */
