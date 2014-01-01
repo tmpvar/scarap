@@ -19,8 +19,10 @@ int read_float(char c) {
   
   if (c == '.') {
     float_mode = 1;
+    float_position = 1;
     return 1;
   } else if (!isdigit(c)) {
+    float_mode = 0;
     return 0;
   }
 
@@ -66,9 +68,6 @@ void gcode_push(char c) {
         printf(": %f; %c\n", parsed_result, c);
         // reset the float parser
         parsed_result = 0;
-        float_mode = 0;
-        float_position = 1;
-
         gcode_push(c);
         return;
       }
