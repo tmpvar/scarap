@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "serialport": "~1.2.5",
+    "split": "~0.2.10",
+    "skateboard": "~0.2.2"
+  }
+}
