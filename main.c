@@ -10,18 +10,21 @@
 #include <stdio.h>
 #include <util/delay.h>
 
-#include "sp.h"
+#include "uart.h"
 #include "gcode.h"
 
-void on_serial(char c) {
-  if (c != ' ' && c != '\r') {
-    gcode_push(c);
-  }
+
+void sp_emit(char c, FILE *stream) {
+  uart0_putc(c);
 }
+
+
+static FILE mystdout = FDEV_SETUP_STREAM(sp_emit, NULL, _FDEV_SETUP_WRITE);
 
 int main(void)
 {
   wdt_disable();
+  cli();
 
   // Stepper enable
   DDRB |= (1<<0);
@@ -33,23 +36,24 @@ int main(void)
   DDRD |= (1<<3) | (1<<6);
   // X axis step and direction
   DDRD |= (1<<2) | (1<<5);
+  PORTB &= ~(1<<0);
+  stdout = &mystdout;
 
-  sp_init();
-
-  sp_read_callback(on_serial);
+  uart0_init(UART_BAUD_SELECT(9600, F_CPU));
 
   sei();
 
   printf("scarap 0.0.1\n");
-
-  /* insert your hardware initialization here */
-
-  for(;;){
-    /* insert your main loop code here */
-    //printf(".");
-    sp_tick();
-
+  char c;
+  unsigned long i = 0;
+  for(;;) {
+    if (uart0_available()) {
+      c = uart0_getc();
+      if (c > 0 && c != ' ' && c != '\r') {
+        gcode_push(c);
+      }
+    }
   }
-  printf("hrm\n");
+
   return 0;   /* never reached */
 }

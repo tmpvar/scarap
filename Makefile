@@ -20,7 +20,7 @@
 DEVICE     = atmega328p
 CLOCK      = 16000000
 PROGRAMMER = -c arduino -P /dev/tty.usbmodemfd121
-OBJECTS    = main.o sp.o gcode.o
+OBJECTS    = main.o uart.o gcode.o motion.o
 FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0x24:m
 
 # ATMega8 fuse bits used above (fuse bits for other devices are different!):
@@ -49,7 +49,7 @@ FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0x24:m
 # Tune the lines below only if you know what you are doing:
 
 AVRDUDE = avrdude $(PROGRAMMER) -p $(DEVICE) -B 10
-COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) -Wl,-u,vfprintf -lprintf_flt -lm
+COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -std=c99 -mmcu=$(DEVICE) -Wl,-u,vfprintf -lprintf_flt -lm
 
 # symbolic targets:
 all:	main.hex
